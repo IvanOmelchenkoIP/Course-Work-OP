@@ -1,0 +1,22 @@
+{
+  "name": "coursework-op",
+  "version": "1.0.0",
+  "description": "coursework-op",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IvanOmelchenkoIP/Course-Work-OP.git"
+  },
+  "author": "Ivan Omelchenko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/IvanOmelchenkoIP/Course-Work-OP/issues"
+  },
+  "homepage": "https://github.com/IvanOmelchenkoIP/Course-Work-OP#readme",
+  "devDependencies": {
+    "eslint": "^7.25.0"
+  }
+}
