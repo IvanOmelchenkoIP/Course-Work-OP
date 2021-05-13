@@ -1,8 +1,12 @@
 # Course-Work-OP
 Course Work for OP, 2nd semester of year 1 at KPI
-##Topic
+
+## Topic
+
 Analogue of a student diary with scheduler and system of data pick
-##General work scheme
+
+## General work scheme
+
 A function calls reading of .json is added to the scheduler. For this work .json file must be formatted the following way:
 ```
 “date”: {”time”: {“contacts”: “data”}}
