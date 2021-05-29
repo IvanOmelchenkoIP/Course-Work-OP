@@ -1,84 +1,98 @@
 "use strict";
 
-const getNewObj = (struct, fnArr) => {
-  if (!isProcessable(struct, fnArr)) return;
-  const newObj = objByFns(struct, fnArr);
+const formNewObj = (struct, fns) => {
+  if (!canStartSelect(struct, fns)) {
+    console.log("Cannot do selection correctly with given data!");
+    return null;
+  }
+
+  console.log("\nStarting selection of a new object:");
+  let newObj = null;
+  for (const fn of fns) {
+    newObj = newObj ? selectByFns(newObj, ...fn) : selectByFns(struct, ...fn);
+
+    console.log("\nNew object has been received:");
+    console.dir(newObj);
+    console.log("\n");
+  }
+  console.log("Selection has been finished.");
   return newObj;
 };
 
-const isProcessable = (struct, fnArr) => {
+const canStartSelect = (struct, fnArr) => {
   if (!struct || typeof struct !== "object") return false;
   if (!fnArr || !Array.isArray(fnArr)) return false;
   return true;
 };
 
-const objByFns = (struct, fns) => {
-  let obj = new Object(null);
-  for (const fn of fns) {
-    obj ? process(obj, null, ...fn) : process(struct, obj, ...fn);
+const selectByFns = (origin, fn, pos) => {
+  if (!isSelectable(origin, fn, pos)) {
+    console.log(
+      `Can not select on current stage with current data!
+Processing to the next stage...`
+    );
+    return origin;
   }
-  return obj;
-};
 
-const process = (origin, newObj, fn, pos = null) => {
-  if (typeof pos !== "number" || pos < 0) return;
-  if (!fn || !origin) return;
-
+  const selection = new Object(null);
   const keys = Object.keys(origin);
+  if (!keys) return null;
   for (const key of keys) {
     if (pos > 0) {
-      if (!origin[key]) return;
-      newObj[key] = process(origin[key], newObj[key], fn, pos - 1);
-      if (!newObj[key]) delete newObj[key];
+      selection[key] =
+        typeof origin[key] === "object"
+          ? selectByFns(origin[key], fn, pos - 1)
+          : null;
     } else {
-      if (isValid(origin[key], key, ...fn)) {
-        newObj[key] = origin[key];
-        coinsole.dir(newObj);
-      } else {
-        newObj[key] = null;
-      }
+      if (isAdded(origin, key, ...fn)) selection[key] = origin[key];
     }
+    !selection[key] || !Object.keys(selection)
+      ? delete selection[key]
+      : console.log(
+          `Key ${key} with value ${selection[key]} has been added to the new object`
+        );
   }
-  return newObj;
+  return selection;
 };
 
-const isValid = (
-  store,
-  key,
-  fnName = null,
-  fnVal = null,
-  argsName = null,
-  argsVal = null
-) => {
-  if (!fnName && !fnVal) {
-    console.log("Error");
-    return false;
-  }
-  if (fnName) {
-    if (!isFitting(key, fnName, argsName)) {
-      return false;
-    }
-  }
-  if (fnVal) {
-    if (!isFittting(store, fnVal, argsVal)) {
-      return false;
-    }
-  }
-
+const isSelectable = (origin, fn, pos) => {
+  if (!origin || typeof origin !== "object") return false;
+  if (!fn || !Array.isArray(fn)) return false;
+  if (typeof pos !== "number" && origin < 0) return false;
   return true;
 };
 
-const isFitting = (obj, fn, args) => {
-  if (typeof fn !== "function" || !fn) return false;
-  try {
-    if (fn.length > 1)
-      if (fn(obj, ...args)) return true;
-      else if (fn(obj)) return true;
-  } catch (err) {
-    console.log(err);
+const isAdded = (obj, key, fnKey, fnVal, argsKey, argsVal) => {
+  if (!fnVal && !fnKey) {
+    console.log("No parameters to select keys by!");
     return false;
   }
-  return false;
+
+  let flag = false;
+  try {
+    if (fnKey) {
+      checkCorrect(key, fnKey, argsKey) ? (flag = true) : (flag = false);
+    }
+    if (fnVal) {
+      checkCorrect(obj[key], fnVal, argsVal) ? (flag = true) : (flag = false);
+    }
+  } catch (err) {
+    return false;
+  }
+  return flag;
 };
 
-module.exports = getNewObj;
+const checkCorrect = (obj, fn, args) => {
+  try {
+    if (fn.length > 1) {
+      return fn(obj, ...args) ? true : false;
+    } else {
+      return fn(obj) ? true : false;
+    }
+  } catch (err) {
+    console.log("There was an error comparing your data!");
+    return false;
+  }
+};
+
+module.exports = formNewObj;
