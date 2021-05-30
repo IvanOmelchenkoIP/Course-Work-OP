@@ -40,17 +40,20 @@ Processing to the next stage...`
   for (const key of keys) {
     if (pos > 0) {
       selection[key] =
-        typeof origin[key] === "object"
+        origin[key] &&
+        typeof origin[key] === "object" &&
+        Object.keys(origin[key]).length
           ? selectByFns(origin[key], fn, pos - 1)
           : null;
+
+      !selection[key] || !Object.keys(selection[key]).length
+        ? delete selection[key]
+        : console.log(
+            `Key ${key} with value ${selection[key]} has been added to the new object`
+          );
     } else {
       if (isAdded(origin, key, ...fn)) selection[key] = origin[key];
     }
-    !selection[key] || !Object.keys(selection)
-      ? delete selection[key]
-      : console.log(
-          `Key ${key} with value ${selection[key]} has been added to the new object`
-        );
   }
   return selection;
 };
