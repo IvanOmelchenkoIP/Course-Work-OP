@@ -13,7 +13,6 @@ const formNewObj = (struct, fns) => {
 
     console.log("\nNew object has been received:");
     console.dir(newObj);
-    console.log("\n");
   }
   console.log("Selection has been finished.");
   return newObj;
@@ -29,7 +28,7 @@ const selectByFns = (origin, fn, pos) => {
   if (!isSelectable(origin, fn, pos)) {
     console.log(
       `Can not select on current stage with current data!
-Processing to the next stage...`
+Processing to the next stage with originally given object...`
     );
     return origin;
   }
@@ -61,7 +60,7 @@ Processing to the next stage...`
 const isSelectable = (origin, fn, pos) => {
   if (!origin || typeof origin !== "object") return false;
   if (!fn || !Array.isArray(fn)) return false;
-  if (typeof pos !== "number" && origin < 0) return false;
+  if (typeof pos !== "number" || pos < 0) return false;
   return true;
 };
 
@@ -71,18 +70,23 @@ const isAdded = (obj, key, fnKey, fnVal, argsKey, argsVal) => {
     return false;
   }
 
-  let flag = false;
+  let flagKey = true;
+  let flagVal = true;
   try {
     if (fnKey) {
-      checkCorrect(key, fnKey, argsKey) ? (flag = true) : (flag = false);
+      checkCorrect(key, fnKey, argsKey) 
+        ? (flagKey = true) 
+        : (flagKey = false);
     }
     if (fnVal) {
-      checkCorrect(obj[key], fnVal, argsVal) ? (flag = true) : (flag = false);
+      checkCorrect(obj[key], fnVal, argsVal)
+        ? (flagVal = true)
+        : (flagVal = false);
     }
   } catch (err) {
     return false;
   }
-  return flag;
+  return flagKey && flagVal ? true : false;
 };
 
 const checkCorrect = (obj, fn, args) => {
