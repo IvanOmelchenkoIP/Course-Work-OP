@@ -6,7 +6,7 @@ const formNewObj = (struct, fns) => {
     return null;
   }
 
-  console.log("\nStarting selection of a new object:");
+  console.log("\nStarting selection data for a new object:");
   let newObj = null;
   for (const fn of fns) {
     newObj = newObj ? selectByFns(newObj, ...fn) : selectByFns(struct, ...fn);
@@ -14,7 +14,7 @@ const formNewObj = (struct, fns) => {
     console.log("\nNew object has been received:");
     console.dir(newObj);
   }
-  console.log("Selection has been finished.");
+  console.log("Forming new object was finished.");
   return newObj;
 };
 
@@ -27,7 +27,7 @@ const canStartSelect = (struct, fnArr) => {
 const selectByFns = (origin, fn, pos) => {
   if (!isSelectable(origin, fn, pos)) {
     console.log(
-      `Can not select on current stage with current data!
+      `Can not start selecting data on current stage!
 Processing to the next stage with originally given object...`
     );
     return origin;
@@ -66,7 +66,7 @@ const isSelectable = (origin, fn, pos) => {
 
 const isAdded = (obj, key, fnKey, fnVal, argsKey, argsVal) => {
   if (!fnVal && !fnKey) {
-    console.log("No parameters to select keys by!");
+    console.log("No parameters to verify your keys for selection by!");
     return false;
   }
 
@@ -82,6 +82,7 @@ const isAdded = (obj, key, fnKey, fnVal, argsKey, argsVal) => {
         : (flagVal = false);
     }
   } catch (err) {
+    console.log("There was an error launching verification of your data!");
     console.error(err);
     return false;
   }
@@ -96,7 +97,7 @@ const checkCorrect = (obj, fn, args) => {
       return fn(obj) ? true : false;
     }
   } catch (err) {
-    console.log("There was an error comparing your data!");
+    console.log("There was an error verifying your data!");
     console.error(err);
     return false;
   }
