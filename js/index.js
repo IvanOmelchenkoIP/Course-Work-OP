@@ -2,10 +2,14 @@
 
 const fs = require("fs");
 const processByFormat = require("./src/processByFormat.js");
+const Scheduler = require("./src/scheduler.js");
+const fnArr = require("./src/fns.js");
+
 let fileNum = 0;
+const interval = 500;
 const timeCounter = 3;
 const fileName = "file.json";
-
+const schedule = new Scheduler();
 
 const processData = (fileName, fns) => {
   fs.readFile(fileName, "utf-8", (err, data) => {
@@ -43,3 +47,6 @@ const newFile = (struct) => {
     }
   });
 };
+
+schedule.addTask(processData, [fileName, fnArr]);
+schedule.runTask(interval, timeCounter);
