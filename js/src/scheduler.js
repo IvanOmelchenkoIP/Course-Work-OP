@@ -33,7 +33,7 @@ Make sure there is a task to delete!`,
     if (!func) return false;
     if (typeof func !== "function") return false;
 
-    if (func.length == 0) {
+    if (!func.length) {
       if (params) return false;
     } else {
       if (!params) return false;
@@ -57,6 +57,7 @@ Make sure there is a task to delete!`,
         else this.task();
       } catch (err) {
         this._err(this._errMsg["run"]);
+        console.error(err);
         clearInterval(intervalId);
         this._active = false;
         return;
