@@ -74,9 +74,7 @@ const isAdded = (obj, key, fnKey, fnVal, argsKey, argsVal) => {
   let flagVal = true;
   try {
     if (fnKey) {
-      checkCorrect(key, fnKey, argsKey) 
-        ? (flagKey = true) 
-        : (flagKey = false);
+      checkCorrect(key, fnKey, argsKey) ? (flagKey = true) : (flagKey = false);
     }
     if (fnVal) {
       checkCorrect(obj[key], fnVal, argsVal)
@@ -84,6 +82,7 @@ const isAdded = (obj, key, fnKey, fnVal, argsKey, argsVal) => {
         : (flagVal = false);
     }
   } catch (err) {
+    console.error(err);
     return false;
   }
   return flagKey && flagVal ? true : false;
@@ -98,6 +97,7 @@ const checkCorrect = (obj, fn, args) => {
     }
   } catch (err) {
     console.log("There was an error comparing your data!");
+    console.error(err);
     return false;
   }
 };
