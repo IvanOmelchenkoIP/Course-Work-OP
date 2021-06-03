@@ -1,36 +1,44 @@
 "use strict";
 
-const inpTypes = {
-  json: (data) => {
-    return extractFromJSON(data);
-  },
+const path = require("path");
+const formNewObj = require("./formNewObj.js");
+
+const inputFormats = {
+  json: (data, fns) => objFromJSON(data, fns),
+};
+const objFromJSON = (data, fns) => {
+  let jsonObj = new Object(null);
+  try {
+    jsonObj = JSON.parse(data.toString());
+  } catch (err) {
+    console.log("There was an error to convert your .json-file into an object");
+    console.error(err);
+    return null;
+  }
+  return getNewObj(jsonObj, fns);
 };
 
-const getStruct = (data, format) => {
-  const types = Object.keys(inpTypes);
-  let obj = null;
-  for (let type of types) {
-    if (type == format) {
-      obj = inpTypes[type](data);
-      break;
+const processByFormat = (data, fns, fileName) => {
+  const recFormat = getDataFormat(fileName);
+  const formats = Object.keys(inputFormats);
+  for (let format of formats) {
+    if (format == recFormat) {
+      return inputFormats[format](data, fns);
     }
   }
-
-  if (obj !== null) return obj;
-  else return null;
+  console.log("Your file format is not supported!");
+  return null;
+};
+const getDataFormat = (fileName) => {
+  let format = path.extname(fileName);
+  format = format.toString().slice(1, format.length);
+  return format;
 };
 
-const extractFromJSON = (data) => {
-  const struct = new Object(null);
-  let sData = null;
-  try {
-    sData = JSON.parse(data.toString());
-  } catch (err) {
-    console.error(err);
-  }
-  let keys = Object.keys(sData);
-  console.log(keys);
-  return;
+const getNewObj = (obj, fns) => {
+  let newObj = new Object(null);
+  newObj = formNewObj(obj, fns);
+  return newObj && Object.keys(newObj).length ? newObj : null;
 };
 
-module.exports = getStruct;
+module.exports = processByFormat;
