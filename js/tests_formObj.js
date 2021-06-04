@@ -10,6 +10,7 @@ const isNumber = (arg) => (+arg ? true : false);
 const testObj = {
   "20-20-20": { abc: () => 3 },
   "20:20:20": ["a = 2", "b = 3", "c = 4"],
+  "new data": ["key1, key2"],
   someInfo: { abc: "234" },
   key1: { inKey: { 3: 4 } },
   key2: { inKey2: { 3: 4 } },
@@ -26,7 +27,7 @@ const testObj = {
   3: "some data",
   4: 5,
   12: null,
-  24: () => 3,
+  24: () => 3
 };
 
 const fns1 = [
@@ -181,7 +182,7 @@ const tests = {
         );
     return formNewObj(testObj, fns16);
   },
-  test16: () => {
+  test17: () => {
     console.log("\n17-----");
     console.log("Testing when every function has its arguments:\n");
     return formNewObj(testObj, fns17);
