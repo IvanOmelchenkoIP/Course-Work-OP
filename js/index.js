@@ -7,7 +7,7 @@ const fnArr = require("./src/fns.js");
 
 let fileNum = 0;
 const interval = 500;
-const timeCounter = 3;
+const timeCounter = 2;
 const fileName = "testFile.json";
 const schedule = new Scheduler();
 
@@ -33,9 +33,7 @@ const newFile = (struct) => {
   const newName = `newFile${fileNum}.json`;
   const newData = JSON.stringify(struct);
   fileNum += 1;
-  console.log("1");
-  console.dir(struct);
-
+  
   fs.writeFile(newDir + newName, newData, (err) => {
     if (err) {
       console.log("There was an error writing your file!");
@@ -49,4 +47,4 @@ const newFile = (struct) => {
 };
 
 schedule.addTask(processData, [fileName, fnArr]);
-schedule.runTask(interval, timeCounter);
+schedule.runTask(interval, timeCounter-1);

@@ -49,12 +49,11 @@ Make sure there is a task to delete!`,
     this._active = true;
     console.log(`Your task started its execution with set parameters.\n`);
     const intervalId = setInterval(() => {
-      if (counter === 0) return this._clearTask(intervalId);
+      if (counter == 0) this._clearTask(intervalId);
 
       try {
         console.log(`Your task was finished. Results:\n`);
-        if (this.task.length) this.task(...this.args);
-        else this.task();
+        this.task.length ? this.task(...this.args) : this.task();
       } catch (err) {
         this._err(this._errMsg["run"]);
         console.error(err);
