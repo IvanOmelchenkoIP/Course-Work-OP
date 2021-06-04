@@ -8,7 +8,7 @@ const fnArr = require("./src/fns.js");
 let fileNum = 0;
 const interval = 500;
 const timeCounter = 3;
-const fileName = "file.json";
+const fileName = "testFile.json";
 const schedule = new Scheduler();
 
 const processData = (fileName, fns) => {

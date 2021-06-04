@@ -2,19 +2,24 @@
 
 const formNewObj = (struct, fns) => {
   if (!canStartSelect(struct, fns)) {
-    console.log("Cannot do selection correctly with given data!");
+    console.log('Cannot do selection correctly with given data!');
     return null;
   }
 
-  console.log("\nStarting selection data for a new object:");
+  let iter = 0;
+  console.log(
+    `Starting selection of a new object (${fns.length} iterations):`
+  );
   let newObj = null;
   for (const fn of fns) {
     newObj = newObj ? selectByFns(newObj, ...fn) : selectByFns(struct, ...fn);
 
-    console.log("\nNew object has been received:");
+    console.log("\n");
+    console.log(`New object after iteration #${iter}:`);
     console.dir(newObj);
+    iter++;
   }
-  console.log("Forming new object was finished.");
+  console.log('Selection has been finished.');
   return newObj;
 };
 
