@@ -33,6 +33,8 @@ this._intervalId;
 
 It also has possible error collection and following methods:
 
+
+№1
 ```javascript
 addTask(func, params)
 ```
@@ -41,6 +43,8 @@ Adds a task with its arguments if none currently exists. Uses help method
 _canAdd(func, params)
 ```
 
+
+№2
 ```javascript
 runTask(interval, counter)
 ```
@@ -54,6 +58,8 @@ _clearTask(intervalId)
 ```
 For clearing interval when the task execution has to stop.
 
+
+№3
 ```javascript
 delTask() 
 ```
@@ -62,6 +68,8 @@ If there is a task, deletes it. Current task stops running. Uses help method:
 _canDel()
 ```
 
+
+№4
 ```javascript
 _err(msg)
 ```
@@ -71,6 +79,7 @@ If any error occurs, this method will be called.
 
 Object sort system has three main functions:
 
+№1
 ```javascript
 formNewObject(struct, fns)
 ```
@@ -80,11 +89,15 @@ Accepts object and array as its arguments, array consists of other arrays that m
 ```
 Function returns newly selected object.
 
+
+№2
 ```javascript
 selectByFns(origin, fn, pos)
 ```
 Accordingly to given position, deepens into object 'original' or calls next main function:
 
+
+№3
 ```javascript
 isAdded(obj, key, fnKey, fnVal, argsKey, argsVal)
 ```
