@@ -2,18 +2,17 @@
 
 const formNewObj = (obj, fns) => {
   return new Promise((resolve, reject) => {
-    if (!canStartSelect(obj, fns))
+    if (!canDoSelection(obj, fns))
       reject('Cannot do selection correctly with given data!');
 
     let iter = 0;
-    let newObj = null;
-    console.log(
-      `Starting selection of a new object (${fns.length} iterations):`
-    );
+    let newObj = new Object(null);
+    console.log('Starting selection of a new object:');
     for (const fn of fns) {
-      newObj = newObj ? selectByFns(newObj, ...fn) : selectByFns(obj, ...fn);
+      if (newObj && Object.keys(newObj).length)
+        newObj = selectByFns(newObj, ...fn);
+      else newObj = selectByFns(obj, ...fn);
 
-      console.log('\n');
       console.log(`New object after iteration #${iter}:`);
       console.dir(newObj);
       iter++;
@@ -22,38 +21,48 @@ const formNewObj = (obj, fns) => {
   });
 };
 
-const canStartSelect = (obj, fns) => {
+const canDoSelection = (obj, fns) => {
   if (!obj || typeof obj !== 'object') return false;
   if (!fns || !Array.isArray(fns)) return false;
   return true;
 };
 
-
 const selectByFns = (origin, fn, pos) => {
-  const selection = new Object(null);
-  const keys = Object.keys(origin);
-  if (!keys) return null;
-  for (const key of keys) {
-    if (pos > 0) {
-      selection[key] =
-        origin[key] &&
-        typeof origin[key] === 'object' &&
-        Object.keys(origin[key]).length
-          ? selectByFns(origin[key], fn, pos - 1)
-          : null;
+  if (!fn || !Array.isArray(fn)) {
+    console.log('Can not start selecting data on current stage!');
+    return origin;
+  }
 
-      !selection[key] || !Object.keys(selection[key]).length
-        ? delete selection[key]
-        : console.log(
-            `Key ${key} with value ${selection[key]} has been added to the new object`
-          );
+  let selection = new Object(null);
+  const keys = Object.keys(origin);
+  for (const key of keys) {
+    selection[key] = addValue(origin, key, fn, pos);
+
+    if (pos > 0) {
+      if (!selection[key] || !Object.keys(selection[key]).length)
+        delete selection[key];
     } else {
-      if (isVerified(origin, key, ...fn)) selection[key] = origin[key];
+      if (!selection[key]) delete selection[key];
     }
   }
   return selection;
 };
 
+const addValue = (obj, key, fn, pos) => {
+  if (typeof pos !== 'number' || pos < 0) {
+    console.log('Position for selecting data was not set correctly!');
+    return null;
+  }
+
+  if (pos > 0) {
+    if (obj[key] && Object.keys(obj[key]).length)
+      return selectByFns(obj[key], fn, pos - 1);
+    else return null;
+  } else {
+    if (isVerified(obj, key, ...fn)) return obj[key];
+    return null;
+  }
+};
 
 const isVerified = (obj, key, fnKey, fnVal, argsKey, argsVal) => {
   if (!fnVal && !fnKey) {
@@ -64,12 +73,10 @@ const isVerified = (obj, key, fnKey, fnVal, argsKey, argsVal) => {
   let flagKey = true;
   let flagVal = true;
   if (fnKey) {
-    paramValid(key, fnKey, argsKey) ? (flagKey = true) : (flagKey = false);
+    flagKey = paramValid(key, fnKey, argsKey) ? true : false;
   }
   if (fnVal) {
-    paramValid(obj[key], fnVal, argsVal)
-      ? (flagVal = true)
-      : (flagVal = false);
+    flagVal = paramValid(obj[key], fnVal, argsVal) ? true : false;
   }
   return flagKey && flagVal ? true : false;
 };

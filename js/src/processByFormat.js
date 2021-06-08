@@ -15,7 +15,7 @@ const inputFormats = {
   },
 };
 
-const getObjByFormat = (data, fileName) => {
+const objByFormat = (data, fileName) => {
   return new Promise((resolve, reject) => {
     const dataFormat = getDataFormat(fileName);
     const formats = Object.keys(inputFormats);
@@ -39,4 +39,4 @@ const getDataFormat = (fileName) => {
   return format;
 };
 
-module.exports = getObjByFormat;
+module.exports = objByFormat;

@@ -5,7 +5,7 @@ const fs = require('fs');
 const fnArr = require('./src/fns.js');
 const Scheduler = require('./src/scheduler.js');
 
-const getObjByFormat = require('./src/processByFormat.js');
+const objByFormat = require('./src/processByFormat.js');
 const formNewObj = require('./src/formNewObj.js');
 
 let fileNum = 0;
@@ -15,19 +15,23 @@ const interval = 500;
 const timeCounter = 2;
 const schedule = new Scheduler();
 
-const processData = (fileName, fns) => {
+const writeFromFile = (fileName, fns) => {
   const coding = 'utf-8';
   const newDir = './newFiles/';
 
+  processData(fileName, fns, coding, newDir);
+};
+
+const processData = (fileName, fns, coding, newDir) => {
   readData(fileName, coding)
     .then((data) => {
       console.log('Your file was been read. Starting processing...');
-      return getObjByFormat(data, fileName);
+      return objByFormat(data, fileName);
     })
     .then((obj) => {
       console.log('An object from your file was received:');
       console.dir(obj);
-      console.log('\nForming new file...');
+      console.log('\nForming new object according to given data...');
       return formNewObj(obj, fns);
     })
     .then((newObj) => {
@@ -77,5 +81,5 @@ const stringifyNewObj = (obj) => {
   return !obj || !Object.keys(obj).length ? null : JSON.stringify(obj);
 };
 
-schedule.addTask(processData, [fileName, fnArr]);
+schedule.addTask(writeFromFile, [fileName, fnArr]);
 schedule.runTask(interval, timeCounter - 1);
