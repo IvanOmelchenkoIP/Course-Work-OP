@@ -5,7 +5,7 @@ const fs = require('fs');
 const fnArr = require('./src/fns.js');
 const Scheduler = require('./src/scheduler.js');
 
-const objByFormat = require('./src/processByFormat.js');
+const objByFormat = require('./src/objByFormat.js');
 const formNewObj = require('./src/formNewObj.js');
 
 let fileNum = 0;
@@ -18,7 +18,6 @@ const schedule = new Scheduler();
 const writeFromFile = (fileName, fns) => {
   const coding = 'utf-8';
   const newDir = './newFiles/';
-
   processData(fileName, fns, coding, newDir);
 };
 
@@ -82,4 +81,4 @@ const stringifyNewObj = (obj) => {
 };
 
 schedule.addTask(writeFromFile, [fileName, fnArr]);
-schedule.runTask(interval, timeCounter - 1);
+schedule.runTask(interval, timeCounter);

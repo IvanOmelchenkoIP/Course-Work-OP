@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 class Scheduler {
   constructor() {
@@ -12,13 +12,11 @@ class Scheduler {
 Make sure you entered correct task parameters or delete current task!`,
       run: `There was a error running your task!
 Make sure there is a task to run with correct arguments, you entered pasrameters correctly or there is no task running!`,
-      del: `There was an error deleting the task!
-Make sure there is a task to delete!`,
     };
   }
 
   addTask(func, params) {
-    if (!this._canAdd(func, params)) return this._err(this._errMsg["add"]);
+    if (!this._canAdd(func, params)) return this._err(this._errMsg['add']);
 
     this.task = func;
     this.args = params;
@@ -30,32 +28,24 @@ Make sure there is a task to delete!`,
     if (this.task) return false;
     if (this.args) return false;
 
-    if (!func) return false;
-    if (typeof func !== "function") return false;
-
-    if (!func.length) {
-      if (params) return false;
-    } else {
-      if (!params) return false;
-      if (!Array.isArray(params)) return false;
-    }
+    if (!func || typeof func !== 'function') return false;
+    if (func.length && (!params || !Array.isArray(params))) return false;
 
     return true;
   }
 
   runTask(interval = null, counter = 1) {
-    if (!this._canRun(interval, counter)) return this._err(this._errMsg["run"]);
+    if (!this._canRun(interval, counter)) return this._err(this._errMsg['run']);
 
     this._active = true;
     console.log(`Your task started its execution with set parameters.\n`);
     const intervalId = setInterval(() => {
       if (counter == 0) this._clearTask(intervalId);
-
       try {
         console.log(`Your task was finished. Results:\n`);
         this.task.length ? this.task(...this.args) : this.task();
       } catch (err) {
-        this._err(this._errMsg["run"]);
+        this._err(this._errMsg['run']);
         console.error(err);
         clearInterval(intervalId);
         this._active = false;
@@ -74,33 +64,22 @@ Make sure there is a task to delete!`,
   _canRun(interval, counter) {
     if (this._active) return false;
 
-    if (typeof counter !== "number" || typeof interval !== "number")
-      return false;
-    if (counter < 1) return false;
-    if (interval <= 0) return false;
+    if (!interval || !+interval || interval <= 0) return false;
+    if (!counter || !+counter || counter < 1) return false;
 
     if (!this.task) return false;
-    if (!this.args) return false;
+    if (this.task.length && !this.args) return false;
 
     return true;
   }
 
   delTask() {
-    if (!this._canDel()) return this._err(this._errMsg["del"]);
-
     this.task = null;
     this.args = null;
     this.active = false;
 
     console.log(`Current task and its arguments were deleted. 
 Active task execution was stopped.\n`);
-  }
-
-  _canDel() {
-    if (!this.task) return false;
-    if (this.task.length && !this.args) return false;
-
-    return true;
   }
 
   _err(msg) {
