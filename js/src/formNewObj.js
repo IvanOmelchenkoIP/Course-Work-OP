@@ -1,43 +1,35 @@
-"use strict";
+'use strict';
 
-const formNewObj = (struct, fns) => {
-  if (!canStartSelect(struct, fns)) {
-    console.log('Cannot do selection correctly with given data!');
-    return null;
-  }
+const formNewObj = (obj, fns) => {
+  return new Promise((resolve, reject) => {
+    if (!canStartSelect(obj, fns))
+      reject('Cannot do selection correctly with given data!');
 
-  let iter = 0;
-  console.log(
-    `Starting selection of a new object (${fns.length} iterations):`
-  );
-  let newObj = null;
-  for (const fn of fns) {
-    newObj = newObj ? selectByFns(newObj, ...fn) : selectByFns(struct, ...fn);
+    let iter = 0;
+    let newObj = null;
+    console.log(
+      `Starting selection of a new object (${fns.length} iterations):`
+    );
+    for (const fn of fns) {
+      newObj = newObj ? selectByFns(newObj, ...fn) : selectByFns(obj, ...fn);
 
-    console.log("\n");
-    console.log(`New object after iteration #${iter}:`);
-    console.dir(newObj);
-    iter++;
-  }
-  console.log('Selection has been finished.');
-  return newObj;
+      console.log('\n');
+      console.log(`New object after iteration #${iter}:`);
+      console.dir(newObj);
+      iter++;
+    }
+    resolve(newObj);
+  });
 };
 
-const canStartSelect = (struct, fnArr) => {
-  if (!struct || typeof struct !== "object") return false;
-  if (!fnArr || !Array.isArray(fnArr)) return false;
+const canStartSelect = (obj, fns) => {
+  if (!obj || typeof obj !== 'object') return false;
+  if (!fns || !Array.isArray(fns)) return false;
   return true;
 };
 
-const selectByFns = (origin, fn, pos) => {
-  if (!isSelectable(origin, fn, pos)) {
-    console.log(
-      `Can not start selecting data on current stage!
-Processing to the next stage with originally given object...`
-    );
-    return origin;
-  }
 
+const selectByFns = (origin, fn, pos) => {
   const selection = new Object(null);
   const keys = Object.keys(origin);
   if (!keys) return null;
@@ -45,7 +37,7 @@ Processing to the next stage with originally given object...`
     if (pos > 0) {
       selection[key] =
         origin[key] &&
-        typeof origin[key] === "object" &&
+        typeof origin[key] === 'object' &&
         Object.keys(origin[key]).length
           ? selectByFns(origin[key], fn, pos - 1)
           : null;
@@ -56,45 +48,33 @@ Processing to the next stage with originally given object...`
             `Key ${key} with value ${selection[key]} has been added to the new object`
           );
     } else {
-      if (isAdded(origin, key, ...fn)) selection[key] = origin[key];
+      if (isVerified(origin, key, ...fn)) selection[key] = origin[key];
     }
   }
   return selection;
 };
 
-const isSelectable = (origin, fn, pos) => {
-  if (!origin || typeof origin !== "object") return false;
-  if (!fn || !Array.isArray(fn)) return false;
-  if (typeof pos !== "number" || pos < 0) return false;
-  return true;
-};
 
-const isAdded = (obj, key, fnKey, fnVal, argsKey, argsVal) => {
+const isVerified = (obj, key, fnKey, fnVal, argsKey, argsVal) => {
   if (!fnVal && !fnKey) {
-    console.log("No parameters to verify your keys for selection by!");
+    console.log('No parameters to verify your keys for selection by!');
     return false;
   }
 
   let flagKey = true;
   let flagVal = true;
-  try {
-    if (fnKey) {
-      checkCorrect(key, fnKey, argsKey) ? (flagKey = true) : (flagKey = false);
-    }
-    if (fnVal) {
-      checkCorrect(obj[key], fnVal, argsVal)
-        ? (flagVal = true)
-        : (flagVal = false);
-    }
-  } catch (err) {
-    console.log("There was an error launching verification of your data!");
-    console.error(err);
-    return false;
+  if (fnKey) {
+    paramValid(key, fnKey, argsKey) ? (flagKey = true) : (flagKey = false);
+  }
+  if (fnVal) {
+    paramValid(obj[key], fnVal, argsVal)
+      ? (flagVal = true)
+      : (flagVal = false);
   }
   return flagKey && flagVal ? true : false;
 };
 
-const checkCorrect = (obj, fn, args) => {
+const paramValid = (obj, fn, args) => {
   try {
     if (fn.length > 1) {
       return fn(obj, ...args) ? true : false;
@@ -102,7 +82,7 @@ const checkCorrect = (obj, fn, args) => {
       return fn(obj) ? true : false;
     }
   } catch (err) {
-    console.log("There was an error verifying your data!");
+    console.log('There was an error verifying your data!');
     console.error(err);
     return false;
   }

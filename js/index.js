@@ -1,50 +1,81 @@
-"use strict";
+'use strict';
 
-const fs = require("fs");
-const processByFormat = require("./src/processByFormat.js");
-const Scheduler = require("./src/scheduler.js");
-const fnArr = require("./src/fns.js");
+const fs = require('fs');
+
+const fnArr = require('./src/fns.js');
+const Scheduler = require('./src/scheduler.js');
+
+const getObjByFormat = require('./src/processByFormat.js');
+const formNewObj = require('./src/formNewObj.js');
 
 let fileNum = 0;
+const fileName = 'testFile.json';
+
 const interval = 500;
 const timeCounter = 2;
-const fileName = "testFile.json";
 const schedule = new Scheduler();
 
 const processData = (fileName, fns) => {
-  fs.readFile(fileName, "utf-8", (err, data) => {
-    if (err) {
-      console.log("There was an error reading your file!");
+  const coding = 'utf-8';
+  const newDir = './newFiles/';
+
+  readData(fileName, coding)
+    .then((data) => {
+      console.log('Your file was been read. Starting processing...');
+      return getObjByFormat(data, fileName);
+    })
+    .then((obj) => {
+      console.log('An object from your file was received:');
+      console.dir(obj);
+      console.log('\nForming new file...');
+      return formNewObj(obj, fns);
+    })
+    .then((newObj) => {
+      console.log('\nNew object was selected:');
+      console.dir(newObj);
+
+      const newName = `newFile${fileNum}.json`;
+      fileNum++;
+
+      console.log('Writing new file with received data...');
+      return newFile(newObj, newDir, newName);
+    })
+    .then((msg) => {
+      console.log(msg);
+    })
+    .catch((err) => {
+      console.log('\nThere was an error processing your data!');
       console.error(err);
-    } else {
-      let struct = new Object(null);
-      struct = processByFormat(data, fns, fileName);
-      newFile(struct);
-    }
+    });
+};
+
+const readData = (fileName, coding) => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(fileName, coding, (err, data) => {
+      if (err) reject(err);
+      else resolve(data);
+    });
   });
 };
 
-const newFile = (struct) => {
-  if (!struct || !Object.keys(struct).length) {
-    console.log("There is no data to write in new file!");
-    return;
-  }
-  const newDir = "./newFiles/";
-  const newName = `newFile${fileNum}.json`;
-  const newData = JSON.stringify(struct);
-  fileNum += 1;
-  
-  fs.writeFile(newDir + newName, newData, (err) => {
-    if (err) {
-      console.log("There was an error writing your file!");
-      console.error(err);
-    } else {
-      console.log(
-        `Your file was added succesfully to the directory ${newDir} under name ${newName}`
-      );
-    }
+const newFile = (obj, newDir, newName) => {
+  return new Promise((resolve, reject) => {
+    const str = stringifyNewObj(obj);
+    if (!str) reject('There is no data to write in new file!');
+
+    fs.writeFile(newDir + newName, str, (err) => {
+      if (err) reject(err);
+      else
+        resolve(
+          `The file ${newName} was written successfully into directory ${newDir}!`
+        );
+    });
   });
+};
+
+const stringifyNewObj = (obj) => {
+  return !obj || !Object.keys(obj).length ? null : JSON.stringify(obj);
 };
 
 schedule.addTask(processData, [fileName, fnArr]);
-schedule.runTask(interval, timeCounter-1);
+schedule.runTask(interval, timeCounter - 1);
